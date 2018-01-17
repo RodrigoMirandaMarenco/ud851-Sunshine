@@ -20,6 +20,8 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -122,7 +124,7 @@ public class WeatherProvider extends ContentProvider {
         return true;
     }
 
-//  TODO (1) Implement the bulkInsert method
+//  COMPLETE (1) Implement the bulkInsert method
     /**
      * Handles requests to insert a set of new rows. In Sunshine, we are only going to be
      * inserting multiple rows of data at a time from a weather forecast. There is no use case
@@ -138,13 +140,40 @@ public class WeatherProvider extends ContentProvider {
      */
     @Override
     public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
-        throw new RuntimeException("Student, you need to implement the bulkInsert method!");
+//          COMPLETE (2) Only perform our implementation of bulkInsert if the URI matches the CODE_WEATHER code
+        final SQLiteDatabase sqLiteDatabase = mOpenHelper.getWritableDatabase();
+        int match = sUriMatcher.match(uri);
 
-//          TODO (2) Only perform our implementation of bulkInsert if the URI matches the CODE_WEATHER code
+        if (match == CODE_WEATHER) {
+            int rows = 0;
+            sqLiteDatabase.beginTransaction();
+            try {
+                for (ContentValues value : values) {
+                    long id = sqLiteDatabase.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, value);
+                    if (id > 0) {
+                        rows++;
+                    }
+                }
+                sqLiteDatabase.setTransactionSuccessful();
+            } catch (SQLiteException ex) {
+                ex.printStackTrace();
+            } finally {
+                sqLiteDatabase.endTransaction();
+            }
 
-//              TODO (3) Return the number of rows inserted from our implementation of bulkInsert
+            if (getContext() != null) {
+                getContext().getContentResolver().notifyChange(uri, null);
+            }
 
-//          TODO (4) If the URI does match match CODE_WEATHER, return the super implementation of bulkInsert
+            return rows;
+
+        } else {
+             return super.bulkInsert(uri, values);
+        }
+
+//              COMPLETE (3) Return the number of rows inserted from our implementation of bulkInsert;
+
+//          COMPLETE (4) If the URI does match match CODE_WEATHER, return the super implementation of bulkInsert
     }
 
     /**
@@ -274,7 +303,8 @@ public class WeatherProvider extends ContentProvider {
      */
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
-        throw new RuntimeException("Student, you need to implement the delete method!");
+//        throw new RuntimeException("Student, you need to implement the delete method!");
+        return 0;
     }
 
     /**
