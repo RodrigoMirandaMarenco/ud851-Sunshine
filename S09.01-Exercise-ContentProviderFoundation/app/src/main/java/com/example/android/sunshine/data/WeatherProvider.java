@@ -49,7 +49,7 @@ public class WeatherProvider extends ContentProvider {
     public static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_WEATHER, CODE_WEATHER);
-        uriMatcher.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_WEATHER + "/*", CODE_WEATHER_WITH_DATE);
+        uriMatcher.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_WEATHER + "/#", CODE_WEATHER_WITH_DATE);
         return uriMatcher;
     }
 
@@ -109,7 +109,7 @@ public class WeatherProvider extends ContentProvider {
             case CODE_WEATHER:
                 break;
             case CODE_WEATHER_WITH_DATE:
-                String date = uri.getPathSegments().get(1);
+                String date = uri.getLastPathSegment();
                 selection = WeatherContract.WeatherEntry.COLUMN_DATE + " = ?";
                 selectionArgs = new String[]{date};
                 break;
