@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements
     private final String TAG = MainActivity.class.getSimpleName();
 
 //  COMPLETE (16) Create a String array containing the names of the desired data columns from our ContentProvider
-    static private String[] sDataColumns = {
+    private static final String[] DATA_COLUMNS = {
             WeatherContract.WeatherEntry.COLUMN_DATE,
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
             WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
@@ -211,10 +211,10 @@ public class MainActivity extends AppCompatActivity implements
             return new CursorLoader(
                     this,
                     WeatherContract.WeatherEntry.CONTENT_URI,
-                    sDataColumns,
+                    DATA_COLUMNS,
+                    WeatherContract.WeatherEntry.getSqlSelectForTodayOnwards(),
                     null,
-                    null,
-                    null
+                    String.format("%s ASC", WeatherContract.WeatherEntry.COLUMN_DATE)
             );
         }
         return null;
